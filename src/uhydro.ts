@@ -317,7 +317,6 @@ function swap(d1: LooseObject, d2: LooseObject) {
   for (let index = 0; index < rMap1.length; index++) {
     const elem1 = rMap1[index];
     const elem2 = rMap2[index];
-    console.log(elem1, elem2);
 
     const elem2Next = elem2.nextSibling;
     const elem2Prev = elem2.previousSibling;
