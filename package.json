@@ -1,6 +1,6 @@
 {
   "name": "uhydro",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "A super lightweight reactive library",
   "type": "module",
   "main": "./dist/uhydro.js",
