@@ -242,6 +242,28 @@ function schedule(fn, ...args) {
 function getValue(proxy) {
     return Reflect.get(proxy, $value);
 }
+function swap(d1, d2) {
+    const rMap1 = reactiveMap.get(d1);
+    const rMap2 = reactiveMap.get(d2);
+    for (let index = 0; index < rMap1.length; index++) {
+        const elem1 = rMap1[index];
+        const elem2 = rMap2[index];
+        console.log(elem1, elem2);
+        const elem2Next = elem2.nextSibling;
+        const elem2Prev = elem2.previousSibling;
+        const elem2Parent = elem2.parentNode;
+        elem1.before(elem2);
+        if (elem2Next) {
+            elem2Next.before(elem1);
+        }
+        else if (elem2Prev) {
+            elem2Prev.after(elem1);
+        }
+        else {
+            elem2Parent.appendChild(elem1);
+        }
+    }
+}
 // Utility
 function identity(something) {
     return something;
@@ -268,4 +290,4 @@ function isTextNode(node) {
 function isDocumentFragment(node) {
     return node.nodeName !== "svg" && "getElementById" in node;
 }
-export { h, reactive, render, observe, view, getValue };
+export { h, reactive, render, observe, view, getValue, swap };
