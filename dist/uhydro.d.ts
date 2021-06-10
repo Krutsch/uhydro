@@ -1,0 +1,11 @@
+declare function h(tag: string | Function | LooseObject, attrs?: LooseObject, ...children: Array<string | h>): HTMLElement | DocumentFragment;
+declare function render(elem: Element, where?: Element): void;
+declare function reactive<T>(val: T): T & setterType;
+declare function observe(proxy: LooseObject, fn: Function): void;
+declare function view(root: string, data: LooseObject, renderFunction: renderFunction): void;
+declare function getValue<T>(proxy: T): T;
+declare type h = ReturnType<typeof document.createElement>;
+declare type LooseObject = Record<PropertyKey, any>;
+declare type renderFunction = (value: any, index: number) => Node;
+declare type setterType = (newVal: any) => void;
+export { h, reactive, render, observe, view, getValue };
