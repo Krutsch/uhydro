@@ -1,6 +1,6 @@
 {
   "name": "uhydro",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A super lightweight reactive library",
   "type": "module",
   "main": "./dist/uhydro.js",
@@ -28,7 +28,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Krutsch/hydro-js.git"
+    "url": "git+https://github.com/Krutsch/uhydro.git"
   },
-  "bugs": "https://github.com/Krutsch/hydro-js/issues"
+  "bugs": "https://github.com/Krutsch/uhydro/issues"
 }
