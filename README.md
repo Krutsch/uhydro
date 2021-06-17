@@ -19,6 +19,10 @@ returns: `HTMLElement | DocumentFragment`
 
 Receives an JSX object and transforms it to HTML. Used for internal bookkeeping too.
 
+#### Special Attribute
+
+- data-bind: normally a swap operation would only affect the individual elements. However, it can be useful to target an upper element for a swap. This is possible with the data-bind attribute on the upper element.
+
 ### reactive
 
 args: `any`<br>

@@ -11,8 +11,7 @@ function h(
   attrs?: LooseObject,
   ...children: Array<string | h>
 ): HTMLElement | DocumentFragment {
-  if (typeof tag === Placeholder.function)
-    return (tag as Function)({ ...attrs, children });
+  if (isFunction(tag)) return (tag as Function)({ ...attrs, children });
   else if (isObject(tag)) {
     return h("", void 0, (tag as LooseObject).children);
   }
@@ -46,11 +45,9 @@ function h(
           ? element.firstChild!
           : (element as ChildNode);
         if (reactiveMap.has(proxy)) {
-          // This should be enough – no need to modify reactiveMapReverse?
           reactiveMap.get(proxy)!.push(elem);
         } else {
-          const elemArr = [elem];
-          reactiveMap.set(proxy, elemArr);
+          reactiveMap.set(proxy, [elem]);
         }
         nodeChangeMap.set(elem, [prop!, value]);
       }
@@ -70,6 +67,7 @@ function render(elem: Element, where?: Element) {
   }
 }
 
+let swapChange = [] as [LooseObject?, LooseObject?];
 let internSet = false;
 function reactive<T>(val: T): T & setterType {
   Reflect.set(setter, $value, val);
@@ -140,8 +138,16 @@ function reactive<T>(val: T): T & setterType {
 
       proxy = newVal;
       return;
-    } else if (typeof newVal === Placeholder.function) {
-      setter(newVal(Reflect.get(proxy, $value)));
+    } else if (isFunction(newVal)) {
+      if (Reflect.has(newVal, $value)) {
+        swapChange.push(newVal);
+        if (swapChange.length === 2) {
+          swap(swapChange[0]!, swapChange[1]!);
+          swapChange = [];
+        }
+      } else {
+        setter(newVal(Reflect.get(proxy, $value)));
+      }
       return;
     }
 
@@ -311,12 +317,19 @@ function getValue<T>(proxy: T): T {
 }
 
 function swap(d1: LooseObject, d2: LooseObject) {
+  const sameElem = new Set();
   const rMap1 = reactiveMap.get(d1)!;
   const rMap2 = reactiveMap.get(d2)!;
 
   for (let index = 0; index < rMap1.length; index++) {
-    const elem1 = rMap1[index];
-    const elem2 = rMap2[index];
+    const elem1 =
+      (rMap1[index] as Element).closest("[data-bind]") || rMap1[index];
+    const elem2 =
+      (rMap2[index] as Element).closest("[data-bind]") || rMap2[index];
+    if (sameElem.has(elem1) || sameElem.has(elem2)) continue;
+
+    sameElem.add(elem1);
+    sameElem.add(elem2);
 
     const elem2Next = elem2.nextSibling;
     const elem2Prev = elem2.previousSibling;
@@ -349,6 +362,9 @@ function randomText() {
 function isObject(obj: any): obj is LooseObject {
   return obj != null && typeof obj === "object";
 }
+function isFunction(fn: any): fn is Function {
+  return typeof fn === "function";
+}
 function deleteFromStack(binding: registerStackItem) {
   const idx = registerStack.findIndex(equals.bind(equals, binding));
   registerStack.splice(idx, 1);
@@ -361,14 +377,10 @@ function isDocumentFragment(node: Node) {
 }
 
 // Types
-
-const enum Placeholder {
-  function = "function",
-}
 type h = ReturnType<typeof document.createElement>;
 type LooseObject = Record<PropertyKey, any>;
 type registerStackItem = [LooseObject, string | symbol, any];
 type renderFunction = (value: any, index: number) => Node;
 type setterType = (newVal: any) => void;
 
-export { h, reactive, render, observe, view, getValue, swap };
+export { h, reactive, render, observe, view, getValue };

@@ -6,7 +6,7 @@ const observerMap = new Map();
 const registerStack = [];
 const globalObj = reactive({});
 function h(tag, attrs, ...children) {
-    if (typeof tag === "function" /* function */)
+    if (isFunction(tag))
         return tag({ ...attrs, children });
     else if (isObject(tag)) {
         return h("", void 0, tag.children);
@@ -37,12 +37,10 @@ function h(tag, attrs, ...children) {
                     ? element.firstChild
                     : element;
                 if (reactiveMap.has(proxy)) {
-                    // This should be enough – no need to modify reactiveMapReverse?
                     reactiveMap.get(proxy).push(elem);
                 }
                 else {
-                    const elemArr = [elem];
-                    reactiveMap.set(proxy, elemArr);
+                    reactiveMap.set(proxy, [elem]);
                 }
                 nodeChangeMap.set(elem, [prop, value]);
             }
@@ -61,6 +59,7 @@ function render(elem, where) {
         document.body.insertBefore(elem, null);
     }
 }
+let swapChange = [];
 let internSet = false;
 function reactive(val) {
     Reflect.set(setter, $value, val);
@@ -127,8 +126,17 @@ function reactive(val) {
             proxy = newVal;
             return;
         }
-        else if (typeof newVal === "function" /* function */) {
-            setter(newVal(Reflect.get(proxy, $value)));
+        else if (isFunction(newVal)) {
+            if (Reflect.has(newVal, $value)) {
+                swapChange.push(newVal);
+                if (swapChange.length === 2) {
+                    swap(swapChange[0], swapChange[1]);
+                    swapChange = [];
+                }
+            }
+            else {
+                setter(newVal(Reflect.get(proxy, $value)));
+            }
             return;
         }
         Reflect.set(proxy, $value, newVal);
@@ -243,11 +251,16 @@ function getValue(proxy) {
     return Reflect.get(proxy, $value);
 }
 function swap(d1, d2) {
+    const sameElem = new Set();
     const rMap1 = reactiveMap.get(d1);
     const rMap2 = reactiveMap.get(d2);
     for (let index = 0; index < rMap1.length; index++) {
-        const elem1 = rMap1[index];
-        const elem2 = rMap2[index];
+        const elem1 = rMap1[index].closest("[data-bind]") || rMap1[index];
+        const elem2 = rMap2[index].closest("[data-bind]") || rMap2[index];
+        if (sameElem.has(elem1) || sameElem.has(elem2))
+            continue;
+        sameElem.add(elem1);
+        sameElem.add(elem2);
         const elem2Next = elem2.nextSibling;
         const elem2Prev = elem2.previousSibling;
         const elem2Parent = elem2.parentNode;
@@ -279,6 +292,9 @@ function randomText() {
 function isObject(obj) {
     return obj != null && typeof obj === "object";
 }
+function isFunction(fn) {
+    return typeof fn === "function";
+}
 function deleteFromStack(binding) {
     const idx = registerStack.findIndex(equals.bind(equals, binding));
     registerStack.splice(idx, 1);
@@ -289,4 +305,4 @@ function isTextNode(node) {
 function isDocumentFragment(node) {
     return node.nodeName !== "svg" && "getElementById" in node;
 }
-export { h, reactive, render, observe, view, getValue, swap };
+export { h, reactive, render, observe, view, getValue };
