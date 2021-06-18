@@ -4,7 +4,7 @@
 
 <sup>_Photo by [OpticalNomad](https://unsplash.com/@opticalnomad) on [Unsplash](https://unsplash.com/)_</sup>
 
-> _micro hydro_ is a minimalistic _~1.3K_ [hydro-js](https://github.com/Krutsch/hydro-js) "subset" to build declarative and reactive UIs.
+> _micro hydro_ is a minimalistic _1.45K_ [hydro-js](https://github.com/Krutsch/hydro-js) "subset" to build declarative and reactive UIs.
 
 ## Concept
 
