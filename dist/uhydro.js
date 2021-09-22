@@ -243,7 +243,6 @@ function schedule(fn, ...args) {
         }
     }
     else {
-        //@ts-expect-error
         (requestIdleCallback || setTimeout)(fn.bind(fn, ...args));
     }
 }

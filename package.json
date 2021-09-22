@@ -1,6 +1,6 @@
 {
   "name": "uhydro",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "A super lightweight reactive library",
   "type": "module",
   "main": "./dist/uhydro.js",
@@ -11,7 +11,8 @@
     "default": "./dist/uhydro.js"
   },
   "scripts": {
-    "start": "tsc"
+    "start": "tsc",
+    "update": "npx npm-check-updates -u && npm i && npm outdated"
   },
   "keywords": [
     "reactive",
@@ -24,7 +25,7 @@
   "author": "Fabian Krutsch <f.krutsch@gmx.de> (https://krutsch.netlify.app/)",
   "license": "MIT",
   "devDependencies": {
-    "typescript": "^4.3.2"
+    "typescript": "^4.4.3"
   },
   "repository": {
     "type": "git",
