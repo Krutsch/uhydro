@@ -25,7 +25,7 @@
   "author": "Fabian Krutsch <f.krutsch@gmx.de> (https://krutsch.netlify.app/)",
   "license": "MIT",
   "devDependencies": {
-    "typescript": "^4.4.3"
+    "typescript": "^5.0.2"
   },
   "repository": {
     "type": "git",
